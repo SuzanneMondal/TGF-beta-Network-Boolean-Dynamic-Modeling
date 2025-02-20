@@ -1,0 +1,389 @@
+% All possible states
+numDigits = 6; % Number of nodes
+
+decimalNumbers = 0:(2^numDigits - 1); % Generating all integers from 0 to 64 - 1
+
+binaryStrings = dec2bin(decimalNumbers, numDigits); % Converting to binary strings
+
+binaryCellArray = cellstr(binaryStrings); % Converting binary strings to a cell array
+
+% All update order permutations
+order = 123456; % Sample order
+
+order_array = arrayfun(@(x) str2double(x), num2str(order)); % Node values: Convert the number to a string, then convert each character to a digit
+
+all_orders = perms(order_array); % All permutations of update order
+
+% Dictionary to map state to index
+indices = 1:64;
+
+num_states = str2num(binaryStrings); % Numeric forms of states
+
+transpose = num_states'; % Column vector to row vector for dictionary
+
+states_dict = dictionary(transpose, indices); % Dictionary
+
+% Function to generate state transition matrix and build the State Transition Graph (STG)
+function [T, G, source, target] = STM(all_orders, binaryCellArray, states_dict)
+
+% Dictionary to map number of permutations to final state
+permutations = [];
+
+fin_states = [];
+
+perm_dict = dictionary(fin_states, permutations);
+
+% Initialise source nodes array
+source = [];
+
+% Initialise target nodes array
+target = [];
+
+% Zero matrix for STM
+T = zeros(64);
+
+% Nested loops to fill up T matrix
+for ini_state = 1:64 % For every initial state
+
+    for in_orders = 1:length(all_orders) % For every update order
+
+        chosen_order = all_orders(in_orders, :); % Extracting update order
+
+        sii = binaryCellArray{ini_state}; % Extracting initial state
+
+        si = sii; % Initializing transient state
+
+        sj = si; % Initializing final state
+        
+        for in_order = 1:6 % For each place in chosen update order
+
+            if chosen_order(in_order) == 1
+                % f1(v2, v5: T = 1) = NOT(v2) OR NOT(v5)
+                condition_1 = si(2) == '0' || si(5) == '0';
+
+                if condition_1 == 1
+                    sj(1) = '1';
+                elseif condition_1 == 0
+                    sj(1) = '0';
+                end
+                si = sj;
+
+            elseif chosen_order(in_order) == 2
+                % f2(v3, v4: T = 1) = NOT(v3) OR NOT(v4)
+                condition_2 = si(3) == '0' || si(4) == '0';
+
+                if condition_2 == 1
+                    sj(2) = '1';
+                elseif condition_2 == 0
+                    sj(2) = '0';
+                end
+                si = sj;
+
+            elseif chosen_order(in_order) == 3
+                % f3(v1, v6: T = 3) = v1 AND NOT(v6)
+                condition_3 = si(1) == '1' && si(6) == '0';
+
+                if condition_3 == 1
+                    sj(3) = '1';
+                elseif condition_3 == 0
+                    sj(3) = '0';
+                end
+                si = sj;
+
+            elseif chosen_order(in_order) == 4
+                % f4(v3, v2, v5: T = 3) = v3 AND NOT(v2) OR NOT(v5)
+                condition_4 = (si(3) == '1' && si(2) == '0') || si(5) == '0';
+
+                if condition_4 == 1
+                    sj(4) = '1';
+                elseif condition_4 == 0
+                    sj(4) = '0';
+                end
+                si = sj;
+
+            elseif chosen_order(in_order) == 5
+                % f5(v4: T = 2) = NOT(v4)
+                condition_5 = si(4) == '0';
+
+                if condition_5 == 1
+                    sj(5) = '1';
+                elseif condition_5 == 0
+                    sj(5) = '0';
+                end
+                si = sj;
+
+            elseif chosen_order(in_order) == 6
+                % f6(v3, v4: T = 2) = NOT(v3) OR NOT(v4)
+                condition_6 = si(3) == '0' || si(4) == '0';
+
+                if condition_6 == 1
+                    sj(6) = '1';
+                elseif condition_6 == 0
+                    sj(6) = '0';
+                end
+                si = sj;
+
+            end
+            
+        end
+        
+        sj_num = str2num(sj); % Numeric final state
+        
+        % Enter in permutations dictionary
+        if isKey(perm_dict, sj_num) % If final state is seen
+            perm_dict(sj_num) = perm_dict(sj_num) + 1; % Add to number of permutations
+        else
+            perm_dict(sj_num) = 1; % Add entry
+        end
+
+        % Add values to STM
+        index = states_dict(sj_num); % Extract index of final state
+        
+        T(ini_state, index) = perm_dict(sj_num)/length(all_orders); % Add probability to T
+        
+        % Check if source-target nodes pair is already present in
+        % respective arrays
+        sourceNodeValue = states_dict(str2num(sii)); % Representative value of initial state in states dictionary
+
+        targetNodeValue = states_dict(sj_num); % Representative value of final state in states dictionary
+        
+        % Check if the pair source-target pair already exists
+        if ~isempty(source)  % Only check if arrays are non-empty
+            isDuplicate = any(source == sourceNodeValue & target == targetNodeValue); % Logical true for both presence true
+
+        else
+            isDuplicate = false;  % First pair is always unique
+
+        end
+
+        % Add to arrays only if the pair is unique
+        if ~isDuplicate
+            source = [source, sourceNodeValue];
+
+            target = [target, targetNodeValue];
+
+        end
+       
+    end
+
+    % Calculate row sums in STM
+    if in_orders == 720 % On last iteration
+
+        summate_what = T(ini_state, :); % Extract row probabilities
+
+        row_sums(ini_state) = sum(summate_what); % Add to row sums matrix
+
+    end
+
+    % Reset permutations dictionary for next initial state
+    permutations = []; % Reset number of permutations
+
+    fin_states = []; % Reset final states
+    
+    perm_dict = dictionary(fin_states, permutations); % Rebuild dictionary
+
+end
+
+% Display size of STG to find number of edges
+disp(['Size of source:', int2str(size(source))]); % Size of source nodes array
+
+disp(['Size of target:', int2str(size(target))]); % Size of source nodes array
+
+% Display size of STM for sanity check
+disp(['Size of STM:', int2str(size(T))]);
+
+% Display row sums matrix for sanity check (all row probabilities sum to 1)
+disp("Sum of rows:");
+disp(row_sums);
+
+% Build table with STM
+colHeaders = binaryCellArray; % Define column headers
+
+rowHeaders = binaryCellArray; % Define row headers
+
+STMTable = array2table(T, 'VariableNames', colHeaders, 'RowNames', rowHeaders); % Convert matrix to table with headers
+
+% Display STM
+disp("State Transition Matrix:");
+disp(STMTable);
+
+% Create the graph
+G = digraph(source, target);
+
+% Plot the graph
+graphPlot = plot(G, 'Layout', 'force');
+
+end
+
+% Generate STM and STG
+[T, G, source, target] = STM(all_orders, binaryCellArray, states_dict);
+
+% Function to find final states (fixed points) starting from all initial states using random order asynchronous update scheme and probabilities of all transitions
+function transitions = absorptionProbabilities(T, binaryCellArray, all_orders, states_dict)
+
+% Display node numbers and corresponding states
+disp('States and corresponding node numbers:')
+disp(states_dict);
+
+% Initialise cell array to store initial state, final state, and transition probabilities
+transitions = {};
+
+% Initialise dictionary to store FPs
+fp = []; % FPs empty array
+
+indices = [];
+
+fp_dict = dictionary(fp, indices); % FPs as keys and indices as values
+
+% Nested loops to find transition probabilities
+for ini_state = 1:length(binaryCellArray) % For every initial state
+
+    for in_orders = 1:length(all_orders) % For every update order
+
+        chosen_order = all_orders(in_orders, :); % Extract update order
+
+        sii = binaryCellArray{ini_state}; % Extract initial state
+
+        si = sii; % Initialize transient state
+
+        sj = si; % Initialize final state
+
+        count = 1; % Record number of iterations before FP is reached
+
+        for how_many_iterations = 1:100 % 100 chosen because iterations are certain to be lesser than that
+
+            sii = si; % Set initial state as previous iteration's final state
+            
+            if count ~= 1 % For every time step except the first one
+
+                chosen_order = all_orders(randi([1, 720]), :); % Choose random update order
+
+            end
+
+            for in_order = 1:6 % For every place in chosen update order (for every interval)
+
+                if chosen_order(in_order) == 1
+                    % f1(v2, v5: T = 1) = NOT(v2) OR NOT(v5)
+                    condition_1 = si(2) == '0' || si(5) == '0';
+
+                    if condition_1 == 1
+                        sj(1) = '1';
+                    elseif condition_1 == 0
+                        sj(1) = '0';
+                    end
+                    si = sj;
+
+                elseif chosen_order(in_order) == 2
+                    % f2(v3, v4: T = 1) = NOT(v3) OR NOT(v4)
+                    condition_2 = si(3) == '0' || si(4) == '0';
+
+                    if condition_2 == 1
+                        sj(2) = '1';
+                    elseif condition_2 == 0
+                        sj(2) = '0';
+                    end
+                    si = sj;
+
+                elseif chosen_order(in_order) == 3
+                    % f3(v1, v6: T = 3) = v1 AND NOT(v6)
+                    condition_3 = si(1) == '1' && si(6) == '0';
+
+                    if condition_3 == 1
+                        sj(3) = '1';
+                    elseif condition_3 == 0
+                        sj(3) = '0';
+                    end
+                    si = sj;
+
+                elseif chosen_order(in_order) == 4
+                    % f4(v3, v2, v5: T = 3) = v3 AND NOT(v2) OR NOT(v5)
+                    condition_4 = (si(3) == '1' && si(2) == '0') || si(5) == '0';
+
+                    if condition_4 == 1
+                        sj(4) = '1';
+                    elseif condition_4 == 0
+                        sj(4) = '0';
+                    end
+                    si = sj;
+
+                elseif chosen_order(in_order) == 5
+                    % f5(v4: T = 2) = NOT(v4)
+                    condition_5 = si(4) == '0';
+
+                    if condition_5 == 1
+                        sj(5) = '1';
+                    elseif condition_5 == 0
+                        sj(5) = '0';
+                    end
+                    si = sj;
+
+                elseif chosen_order(in_order) == 6
+                    % f6(v3, v4: T = 2) = NOT(v3) OR NOT(v4)
+                    condition_6 = si(3) == '0' || si(4) == '0';
+
+                    if condition_6 == 1
+                        sj(6) = '1';
+                    elseif condition_6 == 0
+                        sj(6) = '0';
+                    end
+                    si = sj;
+
+                end
+
+            end
+
+            count = count + 1; % Increment by 1 after 1 interval completion in time step
+
+            sj_num = str2num(sj); % Convert final state to numeric to use for iterative probability calculation 
+            
+            % Iterative probability calculation
+            T_ij = T(ini_state, states_dict(sj_num)); % Extract STM transition probability value
+
+            if how_many_iterations == 1 % For first iteration
+                p = T_ij; % No p0
+
+                p0 = p; % Assign value to p0
+
+            elseif how_many_iterations ~= 1 % For iterations except the first
+                p = T_ij * p0; % Product of p0 and transition probability value
+                
+                p0 = p; % Update p0
+
+            end
+            
+            % Find FP by checking for same initial and final states
+            if sii == sj % Condition favouring an FP
+
+                transitions{end + 1, 1} = binaryCellArray{ini_state}; % Initial state
+
+                transitions{end, 2} = sj; % FP
+
+                transitions{end, 3} = p; % Transition probability
+
+                break % Go to new update order
+
+            end
+
+        end
+        
+        % Add entries to FP dictionary
+        if isKey(fp_dict, sj_num) % Check for presence of FP final state
+            continue; % Go to next update order
+
+        else
+            fp_dict(sj_num) = numEntries(fp_dict) + 1; % FP found and add entry 
+
+        end
+
+    end
+
+end
+
+% Display all fixed points
+disp('FPs:')
+disp(fp_dict);
+
+end
+
+% Store all transitions and their probabilities
+transitions = absorptionProbabilities(T, binaryCellArray, all_orders, states_dict);
