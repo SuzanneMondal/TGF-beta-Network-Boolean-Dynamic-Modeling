@@ -11,6 +11,7 @@ The models developed and the programs written are adapted for a six-node network
 An element 𝑇𝑖𝑗 of the state transition matrix (STM) specifies the probability of achieving a one-step transition from 𝑠𝑖 to 𝑠𝑗.
 The state transition graph (STG) is a directed graph which includes all possible network states as nodes and the transitions between them as directed edges.
 
+
 *2. Fixed Point Attractors (FPs) and graph paths:*
 
 FPs are the network states that terminate a path from any node on the state transition graph (STG). A path on the STG means kicking off the dynamics of the graph's network at a certain network state and visiting several other states (following some directions on the graph), and finally stabilizing the dynamics of the network at an FP.
@@ -18,13 +19,19 @@ FPs are the network states that terminate a path from any node on the state tran
 ### Exploratory Analysis
 
 *1. Node/Vertex Covers:*
+
 A network’s node or vertex cover is a set of vertices that includes at least one endpoint of every edge of a graph. Node covers afford subgraphs that can be focused on, leaving out the graph-nodes that aren’t a part of the cover, to broadly study the effects of changes in the whole graph with simplification.
 
+
 *2. Longest paths starting from every state:*
+
 The longest paths starting from every network state could help in finding sweeping paths that cover a significant number of nodes. These paths can be used to understand how strongly connected nodes in the graph are.
 
+
 *3. All paths on STG:*
+
 The STG has paths starting from each graph-node--even the FPs have paths that terminate directly into themselves (self-loops). To find all the paths starting from every graph-node and ending in each graph-node could be hepful to gauge how likely it is for a network-state transition to occur from one to every other.
+
 
 ### Questions Attempted to be Answered
 
