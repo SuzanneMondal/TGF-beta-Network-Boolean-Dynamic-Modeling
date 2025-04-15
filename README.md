@@ -54,15 +54,27 @@ Q.9: Is it certain that there are no cyclic paths (except FPs' paths) across all
 
 *Matlab files contained in this repository:*
 1_TGGen: State Transition Matrix (STM) and State Transition Graph (STG) generation
+
 2_StatesFPsProbab: Numeric network-states and corresponding graph-node IDs (nodes); fixed point attractor (FPs) states and corresponding graph-node IDs; probabilities of settling into FPs from all initial states with unique first network update orders
+
 3_LPDomNode: Longest paths generation; most appearing (dominant) nodes across longest paths; most appearing FPs across longest paths
+
 4_AllPosPaths: All possible paths on the graph
+
 5_Q1: Paths ending in multiple FPs and graph-nodes appearing most frequently (across all possible paths)
+
 6_Q2: Number of times each FP end a path (acoss all possible paths)
+
 7_Q3: Are there any correlations between a network-state's: 1) # switched on and switched off network-nodes, and/or 2) # complete paths arising from it, and/or 3) average length of complete paths arising from it, and/or 4) # distinct FPs appearing across its complete paths
+
 8_Q4: Network-states of FPs
+
 9_Q5: Specific FP biases
+
 10_Q6: STG cyclic paths (excluding FP-sourced paths)
+
 11_Q7: Graph-nodes appearing most frequently across all paths and their significance
+
 12_Q8: Graph-nodes' frequency appearing at second-to-last position in path and # paths ending in each FP
+
 13_Q9: Substatiate presence of no cyclic paths across all paths
