@@ -53,6 +53,7 @@ Q.9: Is it certain that there are no cyclic paths (except FPs' paths) across all
 **All files in this repository, except this one and 'Workspace_variables,' comprise codes and outputs. It is advisable to load 'Workspace_variables' into your Matlab workspace to ensure all programs run independently of the order in which the programs are executed. The file names follow the convention: n_abbreviation -- where n is a number that corresponds to a number in the sequence in which the programs were written and 'abbreviation' contains the abbreviated form of what is achieved through the program. The expanded form of 'abbreviation' can be found below in this file.**
 
 *Matlab files contained in this repository:*
+
 1_TGGen: State Transition Matrix (STM) and State Transition Graph (STG) generation
 
 2_StatesFPsProbab: Numeric network-states and corresponding graph-node IDs (nodes); fixed point attractor (FPs) states and corresponding graph-node IDs; probabilities of settling into FPs from all initial states with unique first network update orders
