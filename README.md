@@ -7,10 +7,12 @@ The models developed and the programs written are adapted for a six-node network
 ### Boolean Dynamic Modeling Fundamentals
 
 *1. State Transition Matrix (STM) and State Transition Graph (STG):*
+
 An element 𝑇𝑖𝑗 of the state transition matrix (STM) specifies the probability of achieving a one-step transition from 𝑠𝑖 to 𝑠𝑗.
 The state transition graph (STG) is a directed graph which includes all possible network states as nodes and the transitions between them as directed edges.
 
 *2. Fixed Point Attractors (FPs) and graph paths:*
+
 FPs are the network states that terminate a path from any node on the state transition graph (STG). A path on the STG means kicking off the dynamics of the graph's network at a certain network state and visiting several other states (following some directions on the graph), and finally stabilizing the dynamics of the network at an FP.
 
 ### Exploratory Analysis
