@@ -30,7 +30,7 @@ The longest paths starting from every network state could help in finding sweepi
 
 *3. All paths on STG:*
 
-The STG has paths starting from each graph-node--even the FPs have paths that terminate directly into themselves (self-loops). To find all the paths starting from every graph-node and ending in each graph-node could be hepful to gauge how likely it is for a network-state transition to occur from one to every other.
+The STG has paths starting from each graph-node--even the FPs have paths that terminate directly into themselves (self-loops). To find all the paths starting from every graph-node and ending in each graph-node could be helpful to gauge how likely it is for a network-state transition to occur from one to every other.
 
 
 ### Questions Attempted to be Answered
