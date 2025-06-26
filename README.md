@@ -73,7 +73,7 @@ Q.9: Is it certain that there are no cyclic paths (except FPs' paths) across all
 
 **5_Q1**: Paths ending in multiple FPs and graph-nodes appearing most frequently (across all possible paths)
 
-**6_Q2**: Number of times each FP end a path (acoss all possible paths)
+**6_Q2**: Number of times each FP end a path (across all possible paths)
 
 **7_Q3**: Are there any correlations between a network-state's: 1) # switched on and switched off network-nodes, and/or 2) # complete paths arising from it, and/or 3) average length of complete paths arising from it, and/or 4) # distinct FPs appearing across its complete paths
 
